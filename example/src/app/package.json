@@ -1,0 +1,19 @@
+{
+  "name": "example-webserver-app-fileserver",
+  "version": "0.0.1",
+  "description": " NodeJS Example App that read a file from fileserver volume app.",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "api",
+    "node",
+    "express"
+  ],
+  "dependencies": {
+    "cors": "2.8.5",
+    "express": "^4.17.1"
+  }
+}

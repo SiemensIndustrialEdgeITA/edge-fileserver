@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Example App Fileserver Volume</title>
+
+    <!-- Javascript Includes -->
+    <script type="text/javascript" src="/js/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Extra CSS -->
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+
+    <style>
+        body {
+            padding-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Example Web App for Edge Fileserver Volume App</h1>
+            <br>
+            <h3>Test App that read a config file from a Docker volume named edge-fileserver-storage. This file use also
+                link function from the mounted volume
+                path to /opt/app/config folder for demonstrating file path compatibility.</h3>
+            <br>
+            <h5>The config file in the edge-fileserver-storage volume with path
+                <code>/fileserver/2021/my-app/config/my-config.json</code> is linked to a shadow copy file with path
+                <code>/opt/app/config/config.json</code> before starting this NodeJS app by using the command
+                <code>ln -s /fileserver/2021/my-app/config/my-config.json /opt/app/config/config.json && node /usr/src/app/main.js</code>
+                in the docker-compose file of this application.
+            </h5>
+            <br>
+            <h5>Loaded Config file content:</h5>
+            <br>
+            <p class="text-muted" id="config-file-text"></p>
+        </div>
+    </div>
+
+</body>
+<script>
+
+    function getConfig() {
+        // get the id of config text
+        let configText = $("#config-file-text");
+        // empty config text
+        configText.html("");
+        // create an ajax request for get config file from server
+        $.ajax({
+            type: 'GET',
+            url: '/config',
+            dataType: 'json',
+            success: function (body) {
+                console.log(body);
+                // if data is not null
+                if (JSON.stringify(body.data))
+                {
+                    // write received config file text to element
+                    configText.html(JSON.stringify(body.data));
+                }
+                else {
+                    configText.html(JSON.stringify(body));
+                }
+            },
+            error: function (xhr) {
+                configText.html("Config file cannot be read!");
+                console.log(xhr)
+            }
+        });
+    }
+
+
+    window.onload = function () {
+        // get config file content from Server
+        getConfig();
+    }
+
+</script>
+
+</html>

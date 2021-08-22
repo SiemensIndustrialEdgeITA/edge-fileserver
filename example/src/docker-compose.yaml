@@ -1,0 +1,31 @@
+version: "2.4"
+
+services:
+  example-webserver-app-fileserver:
+    build:
+      context: .
+    image: example-webserver-app-fileserver:0.0.1
+    container_name: example-webserver-app-fileserver
+    hostname: example-webserver-app-fileserver
+    environment:
+    - TZ=Europe/Rome
+    # link config file from fileserver mounted volume path to required path for app and start it
+    command: bash -c "ln -sf /fileserver/2021/my-app/config/my-config.json /opt/app/config/config.json && node /usr/src/app/main.js" 
+    volumes:
+      - edge-fileserver-storage:/fileserver/ # where the fileserver volume that contains all configuration file is mounted
+    ports:
+      - 50001:5000
+    restart: unless-stopped
+    mem_limit: 150mb  # mandatory field for IE
+    networks:
+      - proxy-redirect  # default IE network
+
+volumes:
+  edge-fileserver-storage:
+    name: edge-fileserver-storage
+    external: true
+
+networks:
+  proxy-redirect:
+    external: true
+    name: proxy-redirect

@@ -1,0 +1,46 @@
+version: "2.4"
+
+services:
+  edge-fileserver-sftp:
+    build: 
+      context: sftp 
+    image: edge-fileserver-sftp:0.0.1
+    container_name: edge-fileserver-sftp
+    hostname: edge-fileserver-sftp
+    ports:
+      - "22222:22" # port for SSH or SFTP connections
+    volumes:
+      - edge-fileserver-storage:/home/edge/storage # store all data in a subdirectory of user's home directory
+      - ./cfg-data/:/etc/sftp/ # use a file for users configuration
+    restart: unless-stopped
+    mem_limit: 150mb # mandatory field for IE
+    networks:
+      - proxy-redirect # default IE network
+
+  edge-fileserver-browser:
+    build: 
+      context: filebrowser 
+    image: edge-fileserver-browser:0.0.1
+    hostname: edge-fileserver-browser
+    container_name: edge-fileserver-browser
+    restart: unless-stopped
+    ports:
+      - "22223:22223" # port for Web UI
+    volumes:
+      - edge-fileserver-storage:/storage # where all the data are stored from filebrowser ui 
+      - ./cfg-data/:/config/ # use a file for users configuration
+    depends_on: 
+      - edge-fileserver-sftp
+    mem_limit: 150mb # mandatory field for IE
+    networks:
+      - proxy-redirect # default IE network  
+
+volumes:
+  edge-fileserver-storage:
+    name: edge-fileserver-storage
+    external: false
+
+networks:
+  proxy-redirect:
+    external: true
+    name: proxy-redirect
